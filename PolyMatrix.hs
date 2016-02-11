@@ -6,10 +6,10 @@ import Control.Exception
 import System.Environment
 
 k :: Int
-k = 5
+k = 3
 
 f :: [Int]
-f = [0,1,4]
+f = [1,1,4,4]
 
 (|+|) = zipWith (\x y->(x+y) `mod` k)
 
@@ -64,9 +64,9 @@ aPolar d = fromLists $ Data.List.transpose $ rol (Data.List.transpose $ toLists 
 --fromPeriod :: [Int] -> [[Int]]
 fromPeriod xs = fromLists $ map (rol xs) [0..k-1]
 
-coeffs xs = toLists $ modkM $ a * fromPeriod xs
+coeffs xs = reverse $ toLists $ modkM $ a * fromPeriod xs
 
-polarCoeffs d xs = toLists $ modkM $ aPolar d * fromPeriod xs
+polarCoeffs d xs = reverse $ toLists $ modkM $ aPolar d * fromPeriod xs
 
 allCoeffs xs = concatMap (\d->polarCoeffs d xs) [0..k-1]
 
@@ -85,21 +85,13 @@ makeFamily ps = makeFamily' [normalize ps] $ sort $ nub $ map normalize $ coeffs
                             zss = sort $ nub $ yss ++ (map normalize $ coeffs zs)
 
 showTexCoeffs xs d = show d ++ showF xs ++" = "++(intercalate " + " summands) where
-    summands = reverse $ zipWith varMul (map show [0..]) $ map showF $ polarCoeffs d xs
+    summands = reverse $ zipWith varMul (map show [0..]) $ map showF $ reverse $ polarCoeffs d xs
     varMul deg fun | deg == "0" = fun
                    | deg == "1" = varX d ++ fun
                    | otherwise  = varX d ++ "^{" ++ deg ++ "}" ++ fun
     varX d | d == 0    = "x"
            | otherwise = "(x+" ++ show d ++ ")"
     showF xs = let (l,r) = normalize1 xs in ";" ++ show l ++ ";" ++ show r
-
-{-showTexCoeffs xs d = showF xs ++ " = "++(intercalate " + " summands) where
-    summands = reverse $ zipWith varMul (map show [0..]) $ map showF $ polarCoeffs d xs
-    varMul deg fun | deg == "0" = fun
-                   | deg == "1" = varX d ++ fun
-                   | otherwise  = varX d ++ "^{" ++ deg ++ "}" ++ fun
-    varX d | d == 0    = "x"
-           | otherwise = "(x+" ++ show d ++ ")"-}
 
 singular [] = putStr ""
 singular (x:xs) = do
@@ -109,9 +101,14 @@ singular (x:xs) = do
         Right val -> putStrLn $ "Nonsingular " ++ show x -- ++ " " ++ (show $ length val)
     singular xs
 
+lenF = length . filter (/=0)
+poly1 xs  d= reverse $ toList $ modkM $ aPolar d * (fromLists $ transpose [take k $ cycle xs])
+len xs d = lenF $ toList $ modkM $ aPolar d * (fromLists $ transpose [take k $ cycle xs])
+
 main = do
   args <- getArgs
   let op = head args
   case op of
     "AllFamily"   -> mapM_ print $ makeAllFamily (read (args !! 1) :: [Int])
     "Polynomials" -> mapM_ putStrLn $ map (showTexCoeffs (read (args !! 1) :: [Int])) [0..k-1]
+    "Length"      -> mapM_ print $ map (\xs->map (len xs) [0..k-1]) $ makeAllFamily (read (args !! 1) :: [Int])
