@@ -22,8 +22,8 @@ my ($k, $fun) = (3, '[1,1,2,2]');
 my @vectors_ = split ('\n', `./PolyMatrix AllFamily $fun`);
 singular() if $?;
 my @vectors = map {my $s=$_; $s =~ s/(\[|\])/\\$1/g; $s} @vectors_;
-my @functions = qw(t h f g);
-#my @functions = qw(f g h p s t);
+#my @functions = qw(t h f g);
+my @functions = qw(f g h p s t);
 my %substs; @substs{@vectors} = @functions;
 
 for my $f (@vectors_) {
