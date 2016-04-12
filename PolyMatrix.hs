@@ -6,10 +6,7 @@ import Control.Exception
 import System.Environment
 
 k :: Int
-k = 3
-
-f :: [Int]
-f = [1,1,4,4]
+k = 5
 
 (|+|) = zipWith (\x y->(x+y) `mod` k)
 
@@ -84,13 +81,15 @@ makeFamily ps = makeFamily' [normalize ps] $ sort $ nub $ map normalize $ coeffs
                             zs  = normalize $ head $ yss \\ xss
                             zss = sort $ nub $ yss ++ (map normalize $ coeffs zs)
 
+varX d | d == 0    = "x"
+       | otherwise = "(x+" ++ show d ++ ")"
+
+varMul d deg fun | deg == "0" = fun
+                 | deg == "1" = varX d ++ fun
+                 | otherwise  = varX d ++ "^" ++ deg ++ "" ++ fun
+
 showTexCoeffs xs d = show d ++ showF xs ++" = "++(intercalate " + " summands) where
-    summands = reverse $ zipWith varMul (map show [0..]) $ map showF $ reverse $ polarCoeffs d xs
-    varMul deg fun | deg == "0" = fun
-                   | deg == "1" = varX d ++ fun
-                   | otherwise  = varX d ++ "^{" ++ deg ++ "}" ++ fun
-    varX d | d == 0    = "x"
-           | otherwise = "(x+" ++ show d ++ ")"
+    summands = reverse $ zipWith (varMul d) (map show [0..]) $ map showF $ reverse $ polarCoeffs d xs
     showF xs = let (l,r) = normalize1 xs in ";" ++ show l ++ ";" ++ show r
 
 singular [] = putStr ""
@@ -102,13 +101,27 @@ singular (x:xs) = do
     singular xs
 
 lenF = length . filter (/=0)
-poly1 xs  d= reverse $ toList $ modkM $ aPolar d * (fromLists $ transpose [take k $ cycle xs])
+poly1 xs d = toList $ modkM $ aPolar d * (fromLists $ transpose [take k $ cycle xs])
 len xs d = lenF $ toList $ modkM $ aPolar d * (fromLists $ transpose [take k $ cycle xs])
+
+f1 d cs = \x -> flip mod k $ sum $ zipWith (\a b -> a*(x+d)^b) (poly1 cs d) [0..]
+
+showPoly1 xs d = showPoly1' (poly1 xs d) d
+
+showPoly1' (x:xs) d = let vx = if x == 0 then "" else show x in 
+                      intercalate " + " $ vx : filter (/="") (zipWith f xs vars) where
+  n = length xs + 1
+  vars = map ((\a -> varMul d a "") . show) [1..n-1]
+  f 0 b = ""
+  f 1 b = b
+  f a b = show a ++ "*" ++ b
+
+printPoly1 xs = mapM_ (putStrLn . showPoly1 xs) [0..k-1]
 
 main = do
   args <- getArgs
   let op = head args
   case op of
     "AllFamily"   -> mapM_ print $ makeAllFamily (read (args !! 1) :: [Int])
-    "Polynomials" -> mapM_ putStrLn $ map (showTexCoeffs (read (args !! 1) :: [Int])) [0..k-1]
-    "Length"      -> mapM_ print $ map (\xs->map (len xs) [0..k-1]) $ makeAllFamily (read (args !! 1) :: [Int])
+    "Polynomials" -> mapM_ (putStrLn . showTexCoeffs (read (args !! 1) :: [Int])) [0..k-1]
+    "Length"      -> mapM_ (\xs->print $ map (len xs) [0..k-1]) $ makeAllFamily (read (args !! 1) :: [Int])
