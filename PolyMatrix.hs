@@ -69,7 +69,7 @@ allCoeffs xs = concatMap (\d->polarCoeffs d xs) [0..k-1]
 
 --makeAllFamily :: [Int] -> Matrix Int
 makeAllFamily ps = makeAllFamily' [normalize ps] $ sort $ nub $ map normalize $ allCoeffs ps where
-    makeAllFamily' xss yss  | (sort xss) == yss = yss
+    makeAllFamily' xss yss  | (sort xss) == yss = yss    --xss уже просмотренные, yss все потомки 
                             | otherwise                = makeAllFamily' (zs:xss) zss where
                                 zs  = normalize $ head $ yss \\ xss
                                 zss = sort $ nub $ yss ++ (map normalize $ allCoeffs zs)
