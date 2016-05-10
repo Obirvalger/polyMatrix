@@ -19,6 +19,9 @@ infixl 7 |*|
 rol :: [a] -> Int -> [a]
 rol xs i = let (l,r) = splitAt i xs in r ++ l
 
+ror :: [a] -> Int -> [a]
+ror xs i = let (l,r) = splitAt (length xs - i) xs in r ++ l
+
 invert' k 1 = 1
 invert' k p = (n * k + 1) `div` p
     where n = p - invert' p (k `mod` p)
@@ -67,12 +70,22 @@ polarCoeffs d xs = reverse $ toLists $ modkM $ aPolar d * fromPeriod xs
 
 allCoeffs xs = concatMap (\d->polarCoeffs d xs) [0..k-1]
 
+setSort :: Ord a => [a] -> [a]
+setSort = compress . sort where
+    compress []     = []
+    compress (x:xs) = x : (compress $ dropWhile (== x) xs)
+
 --makeAllFamily :: [Int] -> Matrix Int
-makeAllFamily ps = makeAllFamily' [normalize ps] $ sort $ nub $ map normalize $ allCoeffs ps where
-    makeAllFamily' xss yss  | (sort xss) == yss = yss    --xss уже просмотренные, yss все потомки 
-                            | otherwise                = makeAllFamily' (zs:xss) zss where
-                                zs  = normalize $ head $ yss \\ xss
-                                zss = sort $ nub $ yss ++ (map normalize $ allCoeffs zs)
+makeAllFamily ps = makeAllFamily' [normalize ps] $ setSort $ map normalize $ allCoeffs ps where
+    makeAllFamily' xss yss  | xss == yss = yss    --xss уже просмотренные, yss все потомки 
+                            | otherwise                = makeAllFamily' (insert zs xss) zss where
+                                zs  = normalize $ firstNotIn yss xss
+                                zss = setSort $ yss ++ (map normalize $ allCoeffs zs)
+    firstNotIn' ys xs = head $ ys \\ xs                                
+    firstNotIn (y:ys) (x:xs) | y < x  = y
+                             | y > x  = firstNotIn (y:ys) xs
+                             | y == x = firstNotIn ys xs
+    firstNotIn (y:ys) [] = y
 
 --makeFamily :: [Int] -> Matrix Int
 makeFamily ps = makeFamily' [normalize ps] $ sort $ nub $ map normalize $ coeffs ps where
@@ -97,9 +110,18 @@ singular (x:xs) = do
     result <- try (evaluate (makeAllFamily x)) :: IO (Either SomeException [[Int]])
     case result of
         Left ex  -> putStrLn $  "Singular " ++ show x
-        Right val -> putStrLn $ "Nonsingular " ++ show x -- ++ " " ++ (show $ length val)
+        Right val -> putStrLn $ "Nonsingular " ++ show x ++ " " ++ (show $ length val)
     singular xs
 
+nonSingular :: Integral a => [[Int]] -> IO [[Int]]
+nonSingular [] = return []
+nonSingular (x:xs) = do
+    result <- try (evaluate (makeAllFamily x)) :: IO (Either SomeException [[Int]])
+    rest   <- nonSingular xs
+    case result of
+        Left ex   -> return rest
+        Right val -> return $ x : rest
+    
 lenF = length . filter (/=0)
 poly1 xs d = toList $ modkM $ aPolar d * (fromLists $ transpose [take k $ cycle xs])
 len xs d = lenF $ toList $ modkM $ aPolar d * (fromLists $ transpose [take k $ cycle xs])

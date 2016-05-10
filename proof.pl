@@ -17,8 +17,8 @@ print $out <<'END';
 
 END
 
-my ($k, $fun) = (3, '[1,1,2,2]');
-#my ($k, $fun) = (5, '[0,1,4]');
+#my ($k, $fun) = (3, '[1,1,2,2]');
+my ($k, $fun) = (5, '[0,1,4]');
 my @vectors_ = split ('\n', `./PolyMatrix AllFamily $fun`);
 singular() if $?;
 my @vectors = map {my $s=$_; $s =~ s/(\[|\])/\\$1/g; $s} @vectors_;
@@ -82,6 +82,7 @@ say $out '\end{document}';
 #system "pdflatex $filename";#  &> /dev/null";
 system "pdflatex $filename  &> /dev/null";
 die "Bad latex" if $?;
+move($filename, 'proof.tex');
 unlink $filename;
 $filename =~ s/(.*).tex/$1/;
 unlink ($filename . '.aux');
