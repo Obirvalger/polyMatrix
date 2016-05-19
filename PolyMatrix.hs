@@ -6,7 +6,7 @@ import Control.Exception
 import System.Environment
 
 k :: Int
-k = 3
+k = 5
 
 (|+|) = zipWith (\x y->(x+y) `mod` k)
 
@@ -15,6 +15,9 @@ infixl 6 |+|
 (|*|) i = map (\x->x * i `mod` k)
 
 infixl 7 |*|
+
+short3 :: [[Int]]
+short3 = filter (\xs -> sum xs `mod` k == 0) $ tail $ allVectors 3
 
 rol :: [a] -> Int -> [a]
 rol xs i = let (l,r) = splitAt i xs in r ++ l
