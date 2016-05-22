@@ -29,6 +29,7 @@
 \newtheorem*{myst}{Утверждение}
 \usepackage{verbatim}
 \newcommand{\rol} {\textrm{rol}}
+\newcommand{\ror} {\textrm{ror}}
 \newcommand{\pphi}[1] {P^{\delta}(\varphi_{#1})}
 \textwidth=17cm       % Эти строки нужны для того,
 \textheight=21cm      % чтобы равенства уместились
@@ -153,7 +154,11 @@ $k$\nobreakdash-значной логики $f(x_1 , \dots , x_n)$ с перио
 такое обозначение полностью определяет эту функцию.
 
 Введем функцию $\rol_i(\alpha) \in E_k^n \times E_k \rightarrow E_k^n$, производящую циклический сдвиг вектора $\alpha$
-влево. Пусть $\alpha = (a_1, \dots, a_n)$, тогда $\rol_i(\alpha) = (a_{(1+i)\mod k}, \dots, a_{(n+i)\mod k})$.
+влево. Пусть $\alpha = (a_1, \dots, a_n)$, тогда $\rol_i(\alpha) = (a_{(1+i)\mod T}, \dots, a_{(n+i)\mod T})$,
+где $T$ -- длина вектора $\alpha$.
+
+Функция $\ror_i(\alpha) \in E_k^n \times E_k \rightarrow E_k^n$ производит циклический сдвиг вектора $\alpha$
+вправо. Пусть $T$ -- длина вектора $\alpha$, тогда $\ror_i(\alpha) = \rol_{(-i) \mod T}(\alpha)$.
 
 В \cite{sm09} дается описание быстрого алгоритма построения поляризованного полинома по заданному вектору
 функции и поляризации $d$. Данный алгоритм можно использовать для получения периодов, участвующих в разложении
@@ -166,8 +171,10 @@ $$A_d \cdot F(\tau) = \begin{pmatrix}
 \end{pmatrix} \text{, где}
 $$
 
-$$f_{\tau}^{(n+1)} = f_{\tau_{k-1}}^{(n)}(x_{n+1}+d)^{k-1} + f_{\tau_{k-2}}^{(n)}(x_{n+1}+d)^{k-2} + \ldots + f_{\tau_{0}}^{(n)}$$
-
+\begin{equation}
+\label{deg}
+f_{\tau}^{(n+1)} = f_{\tau_{k-1}}^{(n)}(x_{n+1}+d)^{k-1} + f_{\tau_{k-2}}^{(n)}(x_{n+1}+d)^{k-2} + \ldots + f_{\tau_{0}}^{(n)}
+\end{equation}
 $$
 A = \begin{pmatrix}
 1      & 0      & 0                  & \ldots & 0                      \\
@@ -212,6 +219,27 @@ $$
 \end{pmatrix}
 $$
 
+Пусть матрица $A$ состоит из строк $a_i$, $a_i'$ -- строка, полученна из $a_i$, добавлением нулей справа так, что
+длина строки $a_i'$ равна $T$. Тогда матрица $A^{(i)}$ состоит из $T$ цикличиских сдвигов вправо строки $a_i'$:
+$$A^{(i)} = \begin{pmatrix}
+ror_0(a_i')     \\
+ror_1(a_i')     \\
+\vdots          \\
+ror_{T-1}(a_i') \\
+\end{pmatrix}
+$$
+
+Матрица $A^{(0)}$ -- единичная матрица размера $T \times T$.
+% $$
+% \bordermatrix{~      & 0      & 1      & \ldots & \ldots & k-1    & \ldots & T-1    \cr
+%                      & 1      & 0      & 0      & \ldots & 0      & \ldots & 0      \cr
+%                      & 0      & 1      & 0      & \ldots & 0      & \ldots & 0      \cr
+%                      & \vdots & \vdots & \vdots & \vdots & \vdots & \ddots & \vdots \cr
+%                      & 0      & 0      & 0      & \ldots & 1      & \ldots & 0      \cr}
+% $$
+
+Для всех $\tau_i$ из формулы \eqref{deg} верно $\tau_i = A^{(i)} \cdot \tau$.
+
 % Пусть $T \geqslant  1$, $s \geqslant 1$, $\Pi = \{\tau_1, \dots, \tau_s | \tau_i \in E_k^T\}$,
 % $A_{\Pi} = \{f_{\tau}^{(n)}|\tau \in \Pi, n \geqslant 1\}$. Класс $A_{\Pi}$ называется вырожденным,
 % если для любого $\tau \in \Pi$ верно, что $l(f_{\tau}^{(n)}) = \bar{o}(k^n)$, при $n\rightarrow
@@ -227,8 +255,8 @@ $\exists n_0, c > 0 : \forall n \geqslant n_0 \Rightarrow l(f_{\tau}^{(n)}) \geq
 Введем индуктивно множество периодов, порожденных периодом $\tau$ за $i$ шагов -- $\Pi_i(\tau)$.
 В данном случае матрицы рассматриваются, как множества строк.
 $$\Pi_0(\tau) = \{\tau\}$$
-$$\Pi_1(\tau) = \underset{d \in E_k}{\cup} A_d \cdot F(\tau)$$
-$$\Pi_{i+1}(\tau) = \underset{\theta \in \Pi_i(\tau)}{\cup} \Pi_1(\theta)$$
+$$\Pi_1(\tau) = \underset{d \in E_k}{\bigcup} A_d \cdot F(\tau)$$
+$$\Pi_{i+1}(\tau) = \underset{\theta \in \Pi_i(\tau)}{\bigcup} \Pi_1(\theta)$$
 
 Обозначим через $\Pi(\tau)$ такое $\Pi_i(\tau)$, что $\Pi_i(\tau) = \Pi_{i+1}(\tau)$.
 
