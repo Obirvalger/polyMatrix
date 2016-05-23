@@ -6,7 +6,7 @@ import Control.Exception
 import System.Environment
 
 k :: Int
-k = 5
+k = 3
 
 (|+|) = zipWith (\x y->(x+y) `mod` k)
 
@@ -53,15 +53,16 @@ reverseMatrix = fromLists . reverse . toLists
 
 modkM = fmap (`mod` k)
 
-a_ij = uncurry a_ij' where
+a = matrix k k a_ij where 
+    a_ij = uncurry a_ij' where
     a_ij' :: Int -> Int -> Int
     a_ij' i j | i == 1 && j == 1 = 1
               | i == k         = (-1) `mod` k
               | i == 1 || j == 1 = 0
               | otherwise        = (-(j-1)^((k-1-(i-1)) `mod` k)) `mod` k
 
-a = matrix k k a_ij
-
+aI i t = fromLists $ map (\n -> ror (take t $ (toLists a !! i) ++ repeat 0) n) [0..t-1]
+              
 aPolar d = fromLists $ Data.List.transpose $ rol (Data.List.transpose $ toLists a) d
 
 --fromPeriod :: [Int] -> [[Int]]
