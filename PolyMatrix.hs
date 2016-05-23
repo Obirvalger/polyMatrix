@@ -25,6 +25,9 @@ rol xs i = let (l,r) = splitAt i xs in r ++ l
 ror :: [a] -> Int -> [a]
 ror xs i = let (l,r) = splitAt (length xs - i) xs in r ++ l
 
+step n v = iterate iter [v] !! n where
+    iter vs = nub $ concatMap (\v -> concatMap (\d -> toLists $ modkM $ aPolar d * fromPeriod v) [0..k-1]) vs
+
 invert' k 1 = 1
 invert' k p = (n * k + 1) `div` p
     where n = p - invert' p (k `mod` p)
