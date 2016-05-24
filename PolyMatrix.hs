@@ -6,7 +6,7 @@ import Control.Exception
 import System.Environment
 
 k :: Int
-k = 3
+k = 5
 
 (|+|) = zipWith (\x y->(x+y) `mod` k)
 
@@ -68,6 +68,8 @@ aI i t = fromLists $ map (\n -> ror (take t $ (toLists a !! i) ++ repeat 0) n) [
               
 aPolar d = fromLists $ Data.List.transpose $ rol (Data.List.transpose $ toLists a) d
 
+aIPolar d i t = fromLists $ map (\n -> ror (take t $ (toLists (aPolar d) !! i)
+    ++ repeat 0) n) [0..t-1]
 --fromPeriod :: [Int] -> [[Int]]
 fromPeriod xs = fromLists $ map (rol xs) [0..k-1]
 
