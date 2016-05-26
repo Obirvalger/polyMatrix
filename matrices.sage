@@ -226,3 +226,5 @@ ms3 = [
 
 ms3 = map(lambda m: matrix(GF(3), m), ms3)
 
+def kers(k, l):
+    print(map(lambda m: matrix(GF(k), m).right_kernel(), l))
