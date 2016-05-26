@@ -16,6 +16,9 @@ infixl 6 |+|
 
 infixl 7 |*|
 
+showMatrices :: [[[Int]]] -> IO ()
+showMatrices = mapM_ (\m -> putStrLn "[" >> mapM_ (\s -> putStrLn ("  " ++ show s ++ ",")) m >> putStrLn "],")
+
 short3 :: [[Int]]
 short3 = filter (\xs -> sum xs `mod` k == 0) $ tail $ allVectors 3
 
