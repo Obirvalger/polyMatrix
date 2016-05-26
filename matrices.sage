@@ -226,5 +226,67 @@ ms3 = [
 
 ms3 = map(lambda m: matrix(GF(3), m), ms3)
 
+def list_transpose(l):
+        return [list(i) for i in zip(*l)]
+
+def rol(l,n):
+    n = n % len(l)
+    return l[n:] + l[:n]
+
+def ror(l,n):
+    n = n % len(l)
+    return l[-n:] + l[:-n]
+
+def a(k, d = 0):
+    def a(i,j):
+        if (i == 0 and j == 0):
+            return 1
+        elif(i == k-1):
+            return (-1) % k
+        elif(i == 0 or j == 0):
+            return 0
+        else:
+            return (-(j)^((k-1-i) % k)) % k
+    
+    m = [[0 for i in range(k)] for j in range(k)]
+    
+    for i in range(k):
+        for j in range(k):
+            m[i][j] = a(i,j)
+    
+    m = list_transpose(rol(list_transpose(m), d))
+    
+    return matrix(GF(k), m)
+    #return m
+
+def a_i(k, i, l, d = 0):
+    v = list(a(k,d)[i])
+    v += [0] * (l - len(v))
+    
+    m = []
+    for n in range(l):
+        m.append(ror(v,n))
+    
+    return matrix(GF(k), m)
+    #return m
+
+def to_matrix(k, l):
+    return map(lambda m: matrix(GF(k), m), l)
+
 def kers(k, l):
-    print(map(lambda m: matrix(GF(k), m).right_kernel(), l))
+    return map(lambda m: matrix(GF(k), m).right_kernel(), l)
+
+def unit_kers(l, k = 0):
+    if (type(l[0]) == sage.matrix.matrix_modn_dense_float.Matrix_modn_dense_float):
+        n  = l[0].nrows()
+        k  = l[0].base_ring().cardinality()
+        ks = map(lambda x: x.right_kernel(), l)
+    else:
+        if (k < 2):
+            raise(ValueError("k is not get or has value < 2"))
+        n  = len(l[0])
+        ks = kers(k, l)
+    m  = []
+    for i in range(k):
+        m.append([i] * n)
+    return len(filter(lambda y: m == y, map(lambda x: map(list, list(x)), ks))) == len(l)

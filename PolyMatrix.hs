@@ -19,7 +19,7 @@ infixl 7 |*|
 showMatrices :: [[[Int]]] -> IO ()
 showMatrices = mapM_ (\m -> putStrLn "[" >> mapM_ (\s -> putStrLn ("  " ++ show s ++ ",")) m >> putStrLn "],")
 
-matricesSize' n = concatMap (\d -> map (\i -> toLists $ aIPolar d i n) [1..k-1]) [0..k-1]
+matricesSize n = concatMap (\d -> map (\i -> toLists $ aIPolar d i n) [1..k-1]) [0..k-1]
 
 short3 :: [[Int]]
 short3 = filter (\xs -> sum xs `mod` k == 0) $ tail $ allVectors 3
