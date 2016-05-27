@@ -230,16 +230,17 @@ ror_{T-1}(a_i') \\
 \end{pmatrix}
 $$
 
+Аналогичным образом из матрицы $A_d$ строятся матрицы $A_d^{(i)}$.
 Матрица $A^{(0)}$ -- единичная матрица размера $T \times T$.
 Для всех $\tau_i$ из формулы \eqref{deg} верно $\tau_i = A^{(i)} \cdot \tau$.
 Период $\tau$ называется вырожденным, если $l(f_{\tau}^{(n)}) = \bar{o}(k^n)$ при $n\rightarrow\infty$.
 Период $\tau$ называется сложным, если
 $\exists n_0, c > 0 : \forall n \geqslant n_0 \Rightarrow l(f_{\tau}^{(n)}) \geqslant c \cdot k^n$.
-Обозначим через $\tilde{0}$ -- нулевой период.
+Обозначим через $\tilde{n}$ -- константный период, вида [n,n,\ldots,n], где $n \in E_k$.
 
 Введем индуктивно множество периодов, порожденных периодом $\tau$ за $i$ шагов -- $\Pi_i(\tau)$.
 В данном случае матрицы рассматриваются, как множества строк.
-$$\Pi_0(\tau) = \{\tau\}$$
+%$$\Pi_0(\tau) = \{\tau\}$$
 $$\Pi_1(\tau) = \underset{d \in E_k}{\bigcup} A_d \cdot F(\tau)$$
 $$\Pi_{i+1}(\tau) = \underset{\theta \in \Pi_i(\tau)}{\bigcup} \Pi_1(\theta)$$
 
@@ -255,7 +256,6 @@ $$\Pi_{i+1}(\tau) = \underset{\theta \in \Pi_i(\tau)}{\bigcup} \Pi_1(\theta)$$
 \end{enumerate}
 
 \section{Результаты}
-\subsection{Теоремы}
 \begin{myth}
 \label{th1}
 Если $\tilde{0} \not\in \Pi(\tau)$, то $\tau$ сложный период.
@@ -299,6 +299,93 @@ f_{\sigma_1}^{(n)}\cdot(x_{n+1}+d) + f^{(n)}_{\sigma_0} \text{, где} $$
 k \cdot \frac{1}{k^{n_0}} \cdot k^n = \frac{1}{k^{n_0}} \cdot k^{n+1}$
 \end{proof}
 
+\begin{myth}
+%\label{th1}
+Все периоды длины 4 в трехзначной логике, отличные от
+$[0, 0, 0, 0]$, $[1, 0, 1, 0]$, $[2, 0, 2, 0]$, $[0, 1, 0, 1]$, $[1, 1, 1, 1]$, $[2, 1, 2, 1]$,
+$[0, 2, 0, 2]$, $[1, 2, 1, 2]$, $[2, 2, 2, 2]$ являются сложными.
+\end{myth}
+\begin{proof}
+Все матрицы $A_d^{(0)}$ являются невырожденными, поэтому из них нельзя получить нулевой вектор
+умножением на ненулевой.
+
+Рассмотрим матрицы $A_d^{(0)}$, где $d \in [0..2]$, $i \in [1,2]$.
+
+$$ \begin{pmatrix}
+0 & 2 & 1 & 0 \\
+0 & 0 & 2 & 1 \\
+1 & 0 & 0 & 2 \\
+2 & 1 & 0 & 0
+\end{pmatrix} $$
+
+Базисным вектором ядра этой матрицы является вектор $[1, 1, 1, 1]$. Следовательно при умножении этой матрицы на
+вектор $x$ будет нулевой вектор $\Leftrightarrow$ $x \in \{[0, 0, 0, 0], [1, 1, 1, 1], [2, 2, 2, 2]\}$.
+
+$$ \begin{pmatrix}
+2 & 2 & 2 & 0 \\
+0 & 2 & 2 & 2 \\
+2 & 0 & 2 & 2 \\
+2 & 2 & 0 & 2
+\end{pmatrix} $$
+
+Базисным вектором ядра этой матрицы является вектор $[1, 1, 1, 1]$. Следовательно при умножении этой матрицы на
+вектор $x$ будет нулевой вектор $\Leftrightarrow$ $x \in \{[0, 0, 0, 0], [1, 1, 1, 1], [2, 2, 2, 2]\}$.
+
+$$ \begin{pmatrix}
+2 & 1 & 0 & 0 \\
+0 & 2 & 1 & 0 \\
+0 & 0 & 2 & 1 \\
+1 & 0 & 0 & 2
+\end{pmatrix} $$
+
+Базисным вектором ядра этой матрицы является вектор $[1, 1, 1, 1]$. Следовательно при умножении этой матрицы на
+вектор $x$ будет нулевой вектор $\Leftrightarrow$ $x \in \{[0, 0, 0, 0], [1, 1, 1, 1], [2, 2, 2, 2]\}$.
+
+$$ \begin{pmatrix}
+2 & 2 & 2 & 0 \\
+0 & 2 & 2 & 2 \\
+2 & 0 & 2 & 2 \\
+2 & 2 & 0 & 2
+\end{pmatrix} $$
+
+Базисным вектором ядра этой матрицы является вектор $[1, 1, 1, 1]$. Следовательно при умножении этой матрицы на
+вектор $x$ будет нулевой вектор $\Leftrightarrow$ $x \in \{[0, 0, 0, 0], [1, 1, 1, 1], [2, 2, 2, 2]\}$.
+
+$$ \begin{pmatrix}
+1 & 0 & 2 & 0 \\
+0 & 1 & 0 & 2 \\
+2 & 0 & 1 & 0 \\
+0 & 2 & 0 & 1
+\end{pmatrix} $$
+
+Базисными векторами ядра этой матрицы является векторы $[0, 1, 0, 1], [1,0,1,0]$. Следовательно при умножении
+этой матрицы на вектор $x$ будет нулевой вектор $\Leftrightarrow$ $x \in \{[0, 0, 0, 0]$, $[1, 0, 1, 0]$,
+$[2, 0, 2, 0]$, $[0, 1, 0, 1]$, $[1, 1, 1, 1]$, $[2, 1, 2, 1]$, $[0, 2, 0, 2]$, $[1, 2, 1, 2]$, $[2, 2, 2, 2]\}$.
+
+$$ \begin{pmatrix}
+2 & 2 & 2 & 0 \\
+0 & 2 & 2 & 2 \\
+2 & 0 & 2 & 2 \\
+2 & 2 & 0 & 2
+\end{pmatrix} $$
+
+Базисным вектором ядра этой матрицы является вектор $[1, 1, 1, 1]$. Следовательно при умножении этой матрицы на
+вектор $x$ будет нулевой вектор $\Leftrightarrow$ $x \in \{[0, 0, 0, 0], [1, 1, 1, 1], [2, 2, 2, 2]\}$.
+\end{proof}
+
+\clearpage
+
+Следующее утверждение было получено с использованием программы на {S}age,
+листинг приведен на странице \pageref{sub:sage}.
+
+\begin{myst}
+Все периоды длины 7 в пятизначной логике, кроме константных, являются сложными.
+\end{myst}
+
+После запуска программы на различных числовых интервалах была выдвинута следующая гипотеза.
+\emph{Все неконстантные периоды лдины $l$ в $k$\nobreakdash-значной логике будут сложными $\Leftrightarrow$
+все простые делители $l > k$.}
+
 \section{Заключение}
 В работе получены следующие результаты:
 \begin{enumerate}
@@ -306,32 +393,130 @@ k \cdot \frac{1}{k^{n_0}} \cdot k^n = \frac{1}{k^{n_0}} \cdot k^{n+1}$
 
 \item Получено достаточное условие сложности периодов.
 
-\item Написана программа для работы с периодами в которой реализованы функции:
+\item Написаны программы для работы с периодами в которых реализованы функции:
 \begin{itemize}
 \item Проверка периода на сложность
 \item Построение периодов, порожденных данным
 \item Построение специальных матриц, описанных в основных определених,
 и функций для работы с ними.
-\item Вывод полиномов функций по векторам периодов.
+\item Вывод полиномов функций по векторам периодов,
+\item Построение ядер, описанных матриц,
+\item Проверка выдвинутой гипотезы.
 \end{itemize}
 \end{enumerate}
 
 
 \section{Приложение}
 
-%\lstinputlisting[language=Haskell]{PolyMatrix.hs}
+В приложении приводится код программ, использованных для получения некоторых результатов. Также программы
+сами по себе представляют интерес, так как могут быть использованы для более широкого ряда задач,
+чем требовалось при выполнении курсовой работы.
 
-Сдесь приведен код основных функций, используемых в программе.
+\subsection{Программа на Sage} \label{sub:sage}
+Используя систему компьютерной алгебры {S}age\cite{sage} была написана программа для нахождения
+ядер матриц $A^{(i)}$ и для проверке гипотезы о зависимосте сложности векторов от их длины.
+
+\begin{footnotesize}
+\begin{verbatim}
+def list_transpose(l):
+        return [list(i) for i in zip(*l)]
+
+def rol(l,n):
+    n = n % len(l)
+    return l[n:] + l[:n]
+
+def ror(l,n):
+    n = n % len(l)
+    return l[-n:] + l[:-n]
+
+def a(k, d = 0):
+    def a(i,j):
+        if (i == 0 and j == 0):
+            return 1
+        elif(i == k-1):
+            return (-1) % k
+        elif(i == 0 or j == 0):
+            return 0
+        else:
+            return (-(j)^((k-1-i) % k)) % k
+    
+    m = [[0 for i in range(k)] for j in range(k)]
+    
+    for i in range(k):
+        for j in range(k):
+            m[i][j] = a(i,j)
+    
+    m = list_transpose(rol(list_transpose(m), d))
+    
+    return matrix(GF(k), m)
+    #return m
+
+def a_i(k, i, l, d = 0):
+    v = list(a(k,d)[i])
+    v += [0] * (l - len(v))
+    
+    m = []
+    for n in range(l):
+        m.append(ror(v,n))
+    
+    return matrix(GF(k), m)
+    #return m
+
+def to_matrix(k, l):
+    return map(lambda m: matrix(GF(k), m), l)
+
+def matrices(k, t):
+    return to_matrix(k, [a_i(k,i,t,d) for d in range(k) for i in range(1,k)])
+
+def all_matrices(k, t):
+    return to_matrix(k, [a_i(k,i,t,d) for d in range(k) for i in range(0,k)])
+
+def kers(l, k = 0):
+    if (type(l[0]) == sage.matrix.matrix_modn_dense_float.Matrix_modn_dense_float):
+        k  = l[0].base_ring().cardinality()
+        ks = map(lambda x: x.right_kernel(), l)
+    else:
+        if (k < 2):
+            raise(ValueError("k is not get or has value < 2"))
+        n  = len(l[0])
+        ks = map(lambda m: matrix(GF(k), m).right_kernel(), l)
+    return ks
+
+def test_hypot(k, n):
+    return unit_kers(matrices(k,n)) != is_prime(n)
+
+def unit_kers(l, k = 0):
+    if (type(l[0]) == sage.matrix.matrix_modn_dense_float.Matrix_modn_dense_float):
+        n  = l[0].nrows()
+        k  = l[0].base_ring().cardinality()
+        ks = map(lambda x: x.right_kernel(), l)
+    else:
+        if (k < 2):
+            raise(ValueError("k is not get or has value < 2"))
+        n  = len(l[0])
+        ks = kers(l, k)
+    m  = []
+    for i in range(k):
+        m.append([i] * n)
+    return len(filter(lambda y: m == y, map(lambda x: map(list, list(x)), ks))) == len(l)
+\end{verbatim}
+\end{footnotesize}
+
+\subsection{Программа на Haskell}
+На функциональном языке программирования Haskell была написана программа, позволяющая находить
+$\Pi(\tau)$, а также проверяющая периоды на сложность. Еще с помощью это программы можно
+представление полиномов по векторам периодов.
+
 \begin{footnotesize}
 \begin{verbatim}
 k :: Int
 k = 5
 
 rol :: [a] -> Int -> [a]
-rol xs i = let (l,r) = splitAt i xs in r ++ l
+rol xs i = let (l,r) = splitAt (i `mod` length xs) xs in r ++ l
 
 ror :: [a] -> Int -> [a]
-ror xs i = let (l,r) = splitAt (length xs - i) xs in r ++ l
+ror xs i = let (l,r) = splitAt (length xs - (i `mod` length xs)) xs in r ++ l
 
 step n v = iterate iter [v] !! n where
   iter vs = nub $ 
@@ -429,6 +614,9 @@ singular (x:xs) = do
     поляризованных полиномиальных форм // Дискретная математика. -- 2015. -- Т. 27, вып. 1. -- С. 111 -- 122. 
 \bibitem{by15} Балюк~А.\,С., Янушковский~Г.\,В. Верхние оценки функций над конечными полями в некоторых классах
     кронекеровых форм // Известия Иркутского государственного университета. Серия: Математика. -- 2015. -- Т.14. -- С. 3-17.
+\bibitem{sage}
+\emph{{S}ageMath, the {S}age {M}athematics {S}oftware {S}ystem ({V}ersion
+  7.2)}, The Sage Developers, 2016, {\tt http://www.sagemath.org}.
 \end{thebibliography}
 
 \end{singlespace}

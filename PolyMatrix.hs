@@ -6,7 +6,7 @@ import Control.Exception
 import System.Environment
 
 k :: Int
-k = 5
+k = 3
 
 (|+|) = zipWith (\x y->(x+y) `mod` k)
 
@@ -25,10 +25,10 @@ short3 :: [[Int]]
 short3 = filter (\xs -> sum xs `mod` k == 0) $ tail $ allVectors 3
 
 rol :: [a] -> Int -> [a]
-rol xs i = let (l,r) = splitAt i xs in r ++ l
+rol xs i = let (l,r) = splitAt (i `mod` length xs) xs in r ++ l
 
 ror :: [a] -> Int -> [a]
-ror xs i = let (l,r) = splitAt (length xs - i) xs in r ++ l
+ror xs i = let (l,r) = splitAt (length xs - (i `mod` length xs)) xs in r ++ l
 
 step n v = iterate iter [v] !! n where
     iter vs = nub $ concatMap (\v -> concatMap (\d -> toLists $ modkM $ aPolar d * fromPeriod v) [0..k-1]) vs

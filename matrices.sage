@@ -273,11 +273,32 @@ def a_i(k, i, l, d = 0):
 def to_matrix(k, l):
     return map(lambda m: matrix(GF(k), m), l)
 
-def f(k, t):
-    return unit_kers([a_i(k,i,t,d) for d in range(k) for i in range(1,k)])
+def matrices(k, t):
+    return to_matrix(k, [a_i(k,i,t,d) for d in range(k) for i in range(1,k)])
 
-def kers(k, l):
-    return map(lambda m: matrix(GF(k), m).right_kernel(), l)
+def all_matrices(k, t):
+    return to_matrix(k, [a_i(k,i,t,d) for d in range(k) for i in range(0,k)])
+
+def kers(l, k = 0):
+    if (type(l[0]) == sage.matrix.matrix_modn_dense_float.Matrix_modn_dense_float):
+        k  = l[0].base_ring().cardinality()
+        ks = map(lambda x: x.right_kernel(), l)
+    else:
+        if (k < 2):
+            raise(ValueError("k is not get or has value < 2"))
+        n  = len(l[0])
+        ks = map(lambda m: matrix(GF(k), m).right_kernel(), l)
+    return ks
+
+def hypotes(k, start, stop = None):
+    if stop is None:
+        stop = start
+        start = k+1
+    
+    return ["Error {}".format(p) for p in range(start, stop) if unit_kers(matrices(k,p)) != is_prime(p)]
+
+def test_hypot(k, n):
+    return unit_kers(matrices(k,n)) != is_prime(n)
 
 def unit_kers(l, k = 0):
     if (type(l[0]) == sage.matrix.matrix_modn_dense_float.Matrix_modn_dense_float):
@@ -288,7 +309,7 @@ def unit_kers(l, k = 0):
         if (k < 2):
             raise(ValueError("k is not get or has value < 2"))
         n  = len(l[0])
-        ks = kers(k, l)
+        ks = kers(l, k)
     m  = []
     for i in range(k):
         m.append([i] * n)
