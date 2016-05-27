@@ -273,6 +273,9 @@ def a_i(k, i, l, d = 0):
 def to_matrix(k, l):
     return map(lambda m: matrix(GF(k), m), l)
 
+def f(k, t):
+    return unit_kers([a_i(k,i,t,d) for d in range(k) for i in range(1,k)])
+
 def kers(k, l):
     return map(lambda m: matrix(GF(k), m).right_kernel(), l)
 
