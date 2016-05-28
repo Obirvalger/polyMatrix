@@ -6,7 +6,7 @@ import Control.Exception
 import System.Environment
 
 k :: Int
-k = 3
+k = 5
 
 (|+|) = zipWith (\x y->(x+y) `mod` k)
 
