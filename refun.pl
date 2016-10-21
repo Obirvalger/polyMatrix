@@ -6,6 +6,7 @@ use feature qw(say);
 use Data::Dumper;
 
 my $k = 5;
+my $test = 1; # run testing functions?
 
 # strings, representing operators (regexp form)
 my $in_plus_s  = q/ <\+> /;
@@ -33,17 +34,25 @@ my $f4 = "(g + 3*h)*x^4 + (g + h)*x^3 + (g + 3*h)*x^2 + (g + h)*x + (g + 3*h)";
 my $f5 = "(g + 4*h)*x^4 + (3*g + h)*x^3 + (g + 4*h)*x^2 + (3*g + h)*x + (g + 4*h)";
 
 my @functions = ($f0, $f1, $f2, $f3, $f4, $f5);
-test(@functions);
+test_zero_polarization(@functions) if $test;
+test_in_out_identity(@functions) if $test;
+test_arithmetic_operations(@functions) if $test;
 
 my $os = "(2.g <+> 1.h)*(1.x^3 <+> 3.x^2 <+> 3.x^1 <+> 1.x^0)"; #outer summands
 my $s = "(1.g <+> 1.h)*x^4 >+< (2.g <+> 1.h)*x^3 >+< (1.g <+> 1.h)*x^2 >+< (2.g <+> 1.h)*x^1 >+< (1.g <+> 1.h)*x^0";
 
-my $ss = $f1;
+my $ss = $f4;
 my $ds = 1;
 
+#say is_complex(@functions);
+#$, = "\n"; say @functions;
 #say "$ss\n";
+#say "@{[const_multiply(0, $ss)]}\n";
+#say plus($ss, $ss);
+#say "@{[expand(in_format($ss))]}\n";
 #say "@{[in_format($ss)]}\n";
 #say "@{[polarize(in_format($ss), $ds)]}\n";
+#say $ss;
 #say "@{[out_format(polarize(in_format($ss), $ds))]}\n";
 
 =pod
@@ -60,13 +69,34 @@ for my $fun (@functions) {
 }
 =cut
 
-sub test {
-    for my $fs (@_) {
-        my $out = out_format(polarize(in_format($fs), 0));
-        #say $fs;
-        #say $out;
-        die "Zero polarization does not equal to formula" unless $fs eq $out;
+sub is_complex {
+    my $res = 1;
+
+    for my $fun (@functions) {
+        for my $d (1..$k-1) {
+            my $ps = polarize(in_format($fun), $d);
+            my $ns = split($out_plus_r, $ps);
+            if ($ns != $k) {
+                say "Only $ns summands in\n@{[out_format($ps)]}";
+                $res = 0;
+                last;
+            }
+        }
     }
+
+    $res;
+}
+
+sub plus {
+    my @a = @_;
+    out_format(collect(join($out_plus_s, map {expand(in_format($_))} @a)));
+}
+
+sub const_multiply {
+    my ($c, $s) = @_;
+    $s = expand(in_format($s));
+    $s =~ s/(\d+)\./($1*$c)%$k . '.'/ge;
+    out_format(collect($s));
 }
 
 sub in_format {
@@ -76,10 +106,11 @@ sub in_format {
     # s/(\s*)(([a-wyz0-9\*]+\s*\+\s*)+)(\s*[a-wyz0-9\*]*$)/$1($2$4)/
 
     # plus
-    s/\((.+?)\s*\+\s*(.+?)\)/($1Plus$2)/g;
-    s/\s*\+\s*/$out_plus_s/g;
+    s/\(([\w\d\.\*]+?)\s*\+\s*([\w\d\.\*]+?)\)/($1Plus$2)/g;
+    s/(\s\+\s)/$out_plus_s/g;
+    s/([\w\d\(\)])\+([\w\d\(\)])/$1$out_plus_s$2/g;
     s/Plus/$in_plus_s/g;
-    
+
     # multiply
     s/(\d+)\*([a-z]+)/$1.$2/g;
     s/(\d+)([a-z]+)/$1.$2/g;
@@ -160,7 +191,9 @@ sub collect {
     for my $x_pow (sort {sort_powers($b, $a)} keys %powers) {
         my @functions = sort {$a cmp $b} keys %{$powers{$x_pow}};
         @functions = grep {${$powers{$x_pow}}{$_} != 0} @functions;
-        if (@functions == 1) {
+        if (@functions == 0) {
+            # do nothing
+        } elsif (@functions == 1) {
             push @summands, "${$powers{$x_pow}}{$functions[0]}.$functions[0]*$x_pow"
         } else {
             push @summands, qq[(@{[join($in_plus_s, (map {"${$powers{$x_pow}}{$_}.$_"} @functions))]})$x_mul_s$x_pow];
@@ -183,7 +216,13 @@ sub expand {
         for my $fun (@{@mos[0]}) {
             my ($cf, $fs) = split($c_mul_r, $fun);
             for my $var (@{@mos[1]}) {
-                my ($cx, $xs) = split($c_mul_r, $var);
+                my ($cx, $xs);
+                if ($var =~ /^\d+\./) {
+                    ($cx, $xs) = split($c_mul_r, $var);
+                } else {
+                    $cx = 1;
+                    $xs = $var;
+                }
                 my $cs = $cf * $cx % $k;
                 push @summands, "$cs$c_mul_s$fs$x_mul_s$xs";
             }
@@ -213,4 +252,39 @@ sub binomial {
         $product /= $r--;
     }
     return $product;
+}
+
+sub test_in_out_identity {
+    for my $fs (@_) {
+        my $in1 = in_format($fs);
+        my $in2 = in_format(in_format($fs));
+        my $out1 = out_format(in_format($fs));
+        my $out2 = out_format(out_format(in_format($fs)));
+        
+        die "Formulas:\n$fs\n$in1\n$in2\nin_format is not identity operation" if $in1 ne $in2;
+        die "Formulas:\n$fs\n$out1\n$out2\nout_format is not identity operation" if $out1 ne $out2;
+    }
+}
+
+sub test_arithmetic_operations {
+    for my $fs (@_) {
+        my $times0 = const_multiply(0, $fs);
+        my $times1 = const_multiply(1, $fs);
+        my $times2 = const_multiply(2, $fs);
+        my $sum = plus($fs, $fs);
+        my $sum0 = plus($fs, $times0);
+
+        die "Multiplication by 2 does not equal to addition to itself" if $sum ne $times2;
+        die "Multiplication by 1 does not identity" if $times1 ne $fs;
+        die "Multiplication by 0 does not return empty string" if $times0 ne '';
+        die "Addition an empty string (multiplied by zero formula) does not identity" if $sum0 ne $fs;
+    }
+}
+
+sub test_zero_polarization {
+    for my $fs (@_) {
+        my $out = out_format(polarize(in_format($fs), 0));
+
+        die "Zero polarization:\n$out\ndoes not equal to formula:\n$fs" if $fs ne $out;
+    }
 }
