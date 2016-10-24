@@ -1,10 +1,15 @@
 k = 5
 
+# Use SR(), poly(x), polynomial(GF(k))
+GF(k)['x']
 g, h = GF(k)['g, h'].gens()
-var('x', domain='integer')
+#var('x', domain='integer')
 ga = x^4*g + x^3*h + x^2*g + x*h + g
 ha = x^4*h + x^3*g + x^3*g + x^2*h + x*g + x*g + h
+#ha = x^4*h + 2*x^3*g + x^2*h + 2*x*g + h
+var('z')
 
+'''
 f0 = x^4*g + x^3*h + x^2*g + x*h + g
 f1 = x^4*h + x^3*g + x^3*g + x^2*h + x*g + x*g + h
 f2 = (g + h)*x^4 + (2*g + h)*x^3 + (g + h)*x^2 + (2*g + h)*x + g + h
@@ -33,3 +38,4 @@ def showPolynomials():
         for i in range(1,k):
             print("f{} = ".format(i+1) + str((ga + i*ha).expand().collect(x)))
         print('')
+'''

@@ -1,7 +1,8 @@
 #! /usr/bin/perl
 
 use strict;
-use Math::BigRat;
+use warnings;
+#use Math::BigRat;
 use feature qw(say);
 use Data::Dumper;
 
@@ -37,12 +38,15 @@ my @functions = ($f0, $f1, $f2, $f3, $f4, $f5);
 test_zero_polarization(@functions) if $test;
 test_in_out_identity(@functions) if $test;
 test_arithmetic_operations(@functions) if $test;
+test_complex(@functions) if $test;
 
 my $ss = $f4;
 my $ds = 1;
 
-latex_polarizations(@functions);
-
+$ss = '(x+1)^4';
+say polarize(in_format($ss));
+#latex_polarizations(@functions);
+say out_format(polarize(in_format($ss), 2));
 #say is_complex(@functions);
 #$, = "\n"; say @functions;
 #say "$ss\n";
@@ -74,7 +78,7 @@ sub latex_polarizations {
 sub is_complex {
     my $res = 1;
 
-    for my $fun (@functions) {
+    for my $fun (@_) {
         for my $d (1..$k-1) {
             my $ps = polarize(in_format($fun), $d);
             my $ns = split($out_plus_r, $ps);
@@ -172,8 +176,8 @@ sub polarize {
 sub collect {
     sub sort_powers {
         my ($a, $b) = @_;
-        my ($tmp, $ad) = split(/\^/, $a);
-        my ($tmp, $bd) = split(/\^/, $b);
+        my ($tmp1, $ad) = split(/\^/, $a);
+        my ($tmp2, $bd) = split(/\^/, $b);
         $ad <=> $bd;
     }
 
@@ -220,9 +224,9 @@ sub expand {
         my @mos = map {[split($in_plus_r, $_)]} @multipliers;
         print Dumper(@mos) if $dp;
 
-        for my $fun (@{@mos[0]}) {
+        for my $fun (@{$mos[0]}) {
             my ($cf, $fs) = split($c_mul_r, $fun);
-            for my $var (@{@mos[1]}) {
+            for my $var (@{$mos[1]}) {
                 my ($cx, $xs);
                 if ($var =~ /^\d+\./) {
                     ($cx, $xs) = split($c_mul_r, $var);
@@ -266,18 +270,36 @@ sub binomial {
     return $product;
 }
 
+sub test_complex {
+    for my $fun (@_) {
+        for my $d (1..$k-1) {
+            my $ps = polarize(in_format($fun), $d);
+            my $ns = split($out_plus_r, $ps);
+            my $fail = "Fail test_complex\n";
+            die $fail . "Only $ns summands in\n@{[out_format($ps)]}"
+                if $ns != $k;
+            }
+        }
+    
+    say "Ok test_complex";
+}
+
 sub test_in_out_identity {
     for my $fs (@_) {
         my $in1 = in_format($fs);
         my $in2 = in_format(in_format($fs));
         my $out1 = out_format(in_format($fs));
         my $out2 = out_format(out_format(in_format($fs)));
-        
-        die "Formulas:\n$fs\n$in1\n$in2\nin_format is not identity operation" 
+        my $fail = "Fail test_in_out_identity\n";
+
+        die $fail . "Formulas:\n$fs\n$in1\n$in2\nin_format is not identity operation" 
             if $in1 ne $in2;
-        die "Formulas:\n$fs\n$out1\n$out2\nout_format is not identity operation"
-            if $out1 ne $out2;
+        die $fail .
+            "Formulas:\n$fs\n$out1\n$out2\nout_format is not identity operation"
+                if $out1 ne $out2;
     }
+
+    say "Ok test_in_out_identity";
 }
 
 sub test_arithmetic_operations {
@@ -287,22 +309,29 @@ sub test_arithmetic_operations {
         my $times2 = const_multiply(2, $fs);
         my $sum = plus($fs, $fs);
         my $sum0 = plus($fs, $times0);
+        my $fail = "Fail test_arithmetic_operations\n";
 
-        die "Multiplication by 2 does not equal to addition to itself"
+        die $fail . "Multiplication by 2 does not equal to addition to itself"
             if $sum ne $times2;
-        die "Multiplication by 1 does not identity" if $times1 ne $fs;
-        die "Multiplication by 0 does not return empty string"
+        die $fail . "Multiplication by 1 does not identity" if $times1 ne $fs;
+        die $fail . "Multiplication by 0 does not return empty string"
             if $times0 ne '';
-        die "Addition an empty string (multiplied by zero formula) does not identity"
-            if $sum0 ne $fs;
+        die $fail . 
+            "Addition an empty string (multiplied by zero formula) does not identity"
+                if $sum0 ne $fs;
     }
+
+    say "Ok test_arithmetic_operations";
 }
 
 sub test_zero_polarization {
     for my $fs (@_) {
         my $out = out_format(polarize(in_format($fs), 0));
+        my $fail = "Fail test_zero_polarization\n";
 
-        die "Zero polarization:\n$out\ndoes not equal to formula:\n$fs"
+        die $fail . "Zero polarization:\n$out\ndoes not equal to formula:\n$fs"
             if $fs ne $out;
     }
+
+    say "Ok test_zero_polarization";
 }
