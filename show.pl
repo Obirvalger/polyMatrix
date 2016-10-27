@@ -2,17 +2,13 @@
 
 use strict;
 use warnings;
+use Carp;
 use Getopt::Long;
-use feature 'say';
+use feature qw(say);
 use Polynomial;
 
 our $k = 5;
-=pod
-say to_latex('3*(x+2)^4 + 2*(x+2)^3 + 2*(x+2)^2 + (x+2)', [4]);
-say to_latex('x^3 + 4*x^2 + x + 2', [0]);
-say to_latex('3*x^4 + 2*x^3 + 1', [2,3]);
-exit;
-=cut
+
 # say "@{zero_indexes('40103')}";
 # say to_latex('3*(x+4)^4 + (x+4)^2 + 4', zero_indexes('40103'));
 # exit;
@@ -74,16 +70,13 @@ unless ($reorder) {
         say $out "f$i = ($function)" if $verbose >= 1 and not $latex;
         say $out "\$f_$i = ($function)\$" if $verbose >= 1 and $latex;
         if (defined $polarization) {
-            say $out print_poly($function, $polarization) unless $vector;
-            say $out make_poly($function, $polarization) if $vector;
+            say poly($function, $polarization, $vector);
         } else {
             say $out '$$\\begin{array}{', 'c' x $k, '}' if $latex;
             for my $d (0..$k-1) {
                 #my $s = () = make_poly($function, $_) =~ /[1-9]/g;
                 #say "d = $_, s = $s, f = $f";
-                my $polynomial;
-                $polynomial = print_poly($function, $d) unless $vector;
-                $polynomial = make_poly($function, $d) if $vector;
+                my $polynomial = poly($function, $d, $vector);
                 $polynomial = to_latex($polynomial,
                     zero_indexes(make_poly($function, $d))) if $latex;
 
@@ -111,17 +104,9 @@ unless ($reorder) {
         say $out '\\begin{tabular}{|', 'C|' x $k, '}' if $latex;
         say $out '\\hline' if @functions > 1 and $latex;
         for my $function (@functions) {
-            my $polynomial;
-            $polynomial = print_poly($function, $d) unless $vector;
-            $polynomial = make_poly($function, $d) if $vector;
+            my $polynomial = poly($function, $d, $vector);
             $polynomial = to_latex($polynomial,
                     zero_indexes(make_poly($function, $d))) if $latex;
-            
-            if ($latex and 0) {
-                my @zero_indexes = make_poly($function, $d) =~ /0/g;
-                $polynomial =~ s/\*//g;
-                $polynomial .= " \\\\";
-            }
             
             say $out $polynomial;
         }
@@ -135,19 +120,18 @@ sub to_latex {
     $_ = shift;
     my $zero_indexes = shift;
     my @zero_indexes = @{$zero_indexes};
-#     say "@zero_indexes";
     s/\*//g;
     s/\((\w+?)\s*\+\s*(\w+?)\)/($1 Plus $2)/g;
     my @summands = split /\s*\+\s*/;
     for my $i (@zero_indexes) {
-#         say $i;
-#         say "@summands";
+        splice @summands, $i, 0, 'Nop';
+=pod        
         if ($i < @summands) {
             splice @summands, $i, 0, 'Nop';
         } else {
             push @summands, 'Nop';
         }
-#         say "@summands";
+=cut        
     }
     $_ = join " & + ", @summands;
     s/\+ Nop//g;
@@ -156,7 +140,25 @@ sub to_latex {
     s/Plus/+/g;
     s/$/ \\\\ \\hline/ if $reorder;
     s/$/ \\\\/ unless $reorder;
+    
     $_;
+}
+
+sub poly {
+    my $f = shift; # function
+    my $d = shift; # polarization
+    my $vector = shift; # to vector or to polynomial
+    my $res = '';
+    
+    if ($vector) {
+        $res = make_poly($f, $d);
+    } else {
+        $res = print_poly($f, $d);
+        make_vec($res) eq $f or 
+            croak "Polynomial: $res\n doesn't realize the function: $f";
+    }
+    
+    $res;
 }
 
 sub zero_indexes {

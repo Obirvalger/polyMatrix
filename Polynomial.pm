@@ -1,7 +1,8 @@
-#! /usr/bin/perl
+    #! /usr/bin/perl
 
 use strict;
 use warnings;
+use Carp;
 use feature 'say';
 
 our $k = 2; # declare specific our $k you need in your scrit
@@ -97,6 +98,22 @@ sub make_poly {
     $poly[$k-1] -= $f[$_-$d] for (0..$k-1);
     $poly[$k-1] %= $k;
     join '', @poly;
+}
+
+sub make_vec {
+    my $polynomial = shift;
+    local $k = 5;
+    my $vec = '';
+    $polynomial =~ s/\^/**/g;
+#     say $polynomial;
+    $polynomial =~ /^[\s\d\(\)\+\*x]+$/ or croak "Wrong polynomial";
+    $polynomial =~ s/x/\$i/g;
+    $polynomial = "($polynomial) % $k";
+    for my $i (0..$k-1) {
+        $vec .= eval $polynomial;
+    }
+    
+    $vec;
 }
 
 sub add_mul {
