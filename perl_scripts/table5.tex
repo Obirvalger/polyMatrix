@@ -1,0 +1,64 @@
+\documentclass[a4paper, 10pt]{extarticle}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+\usepackage{array}
+\usepackage{diagbox}
+\newcolumntype{C}{>{$}c<{$}}
+
+\begin{document}
+\begin{table}
+\centering
+\begin{tabular}{|c|C|C|C|C|C|}
+\hline
+\diagbox[height=1.3\line, innerleftsep=2.2pt, innerrightsep=2.2pt]{f}{d} & 0 & 1 & 2 & 3 & 4 \\ \hline
+$f_0$ & f_0f_1f_0f_1f_0 & f_0f_2f_2f_2f_2 & f_0f_4f_1f_3f_0 & f_0f_3f_1f_4f_0 & f_0f_5f_5f_5f_5 \\ \hline
+$f_1$ & f_1f_0f_1f_0f_1 & f_1f_4f_4f_4f_4 & f_1f_2f_0f_5f_1 & f_1f_5f_0f_2f_1 & f_1f_3f_3f_3f_3 \\ \hline
+$f_2$ & f_2f_4f_2f_4f_2 & f_2f_5f_5f_5f_5 & f_2f_3f_4f_1f_2 & f_2f_1f_4f_3f_2 & f_2f_0f_0f_0f_0 \\ \hline
+$f_3$ & f_3f_5f_3f_5f_3 & f_3f_1f_1f_1f_1 & f_3f_0f_5f_2f_3 & f_3f_2f_5f_0f_3 & f_3f_4f_4f_4f_4 \\ \hline
+$f_4$ & f_4f_2f_4f_2f_4 & f_4f_3f_3f_3f_3 & f_4f_5f_2f_0f_4 & f_4f_0f_2f_5f_4 & f_4f_1f_1f_1f_1 \\ \hline
+$f_5$ & f_5f_3f_5f_3f_5 & f_5f_0f_0f_0f_0 & f_5f_1f_3f_4f_5 & f_5f_4f_3f_1f_5 & f_5f_2f_2f_2f_2 \\ \hline
+\end{tabular}
+\end{table}
+$$\begin{array}{l}
+gx^4 + hx^3 + gx^2 + hx + g \\
+g(x+1)^4 + (g + h)(x+1)^3 + (2g + 2h)(x+1)^2 + (4g + 4h)(x+1) + (3g + 3h) \\
+g(x+2)^4 + (2g + h)(x+2)^3 + 4h(x+2)^2 + (4g + 3h)(x+2) + g \\
+g(x+3)^4 + (3g + h)(x+3)^3 + h(x+3)^2 + (g + 3h)(x+3) + g \\
+g(x+4)^4 + (4g + h)(x+4)^3 + (2g + 3h)(x+4)^2 + (g + 4h)(x+4) + (3g + 2h) \\
+\end{array}$$
+$$\begin{array}{l}
+hx^4 + 2gx^3 + hx^2 + 2gx + h \\
+h(x+1)^4 + (2g + h)(x+1)^3 + (4g + 2h)(x+1)^2 + (3g + 4h)(x+1) + (g + 3h) \\
+h(x+2)^4 + (2g + 2h)(x+2)^3 + 3g(x+2)^2 + (g + 4h)(x+2) + h \\
+h(x+3)^4 + (2g + 3h)(x+3)^3 + 2g(x+3)^2 + (g + h)(x+3) + h \\
+h(x+4)^4 + (2g + 4h)(x+4)^3 + (g + 2h)(x+4)^2 + (3g + h)(x+4) + (4g + 3h) \\
+\end{array}$$
+$$\begin{array}{l}
+(g + h)x^4 + (2g + h)x^3 + (g + h)x^2 + (2g + h)x + (g + h) \\
+(g + h)(x+1)^4 + (3g + 2h)(x+1)^3 + (g + 4h)(x+1)^2 + (2g + 3h)(x+1) + (4g + h) \\
+(g + h)(x+2)^4 + (4g + 3h)(x+2)^3 + (3g + 4h)(x+2)^2 + 2h(x+2) + (g + h) \\
+(g + h)(x+3)^4 + 4h(x+3)^3 + (2g + h)(x+3)^2 + (2g + 4h)(x+3) + (g + h) \\
+(g + h)(x+4)^4 + g(x+4)^3 + 3g(x+4)^2 + 4g(x+4) + 2g \\
+\end{array}$$
+$$\begin{array}{l}
+(g + 2h)x^4 + (4g + h)x^3 + (g + 2h)x^2 + (4g + h)x + (g + 2h) \\
+(g + 2h)(x+1)^4 + 3h(x+1)^3 + h(x+1)^2 + 2h(x+1) + 4h \\
+(g + 2h)(x+2)^4 + g(x+2)^3 + (g + 4h)(x+2)^2 + (g + h)(x+2) + (g + 2h) \\
+(g + 2h)(x+3)^4 + (2g + 2h)(x+3)^3 + (4g + h)(x+3)^2 + 3g(x+3) + (g + 2h) \\
+(g + 2h)(x+4)^4 + (3g + 4h)(x+4)^3 + (4g + 2h)(x+4)^2 + (2g + h)(x+4) + (g + 3h) \\
+\end{array}$$
+$$\begin{array}{l}
+(g + 3h)x^4 + (g + h)x^3 + (g + 3h)x^2 + (g + h)x + (g + 3h) \\
+(g + 3h)(x+1)^4 + (2g + 4h)(x+1)^3 + (4g + 3h)(x+1)^2 + (3g + h)(x+1) + (g + 2h) \\
+(g + 3h)(x+2)^4 + (3g + 2h)(x+2)^3 + (4g + 4h)(x+2)^2 + 2g(x+2) + (g + 3h) \\
+(g + 3h)(x+3)^4 + 4g(x+3)^3 + (g + h)(x+3)^2 + (4g + h)(x+3) + (g + 3h) \\
+(g + 3h)(x+4)^4 + 3h(x+4)^3 + 4h(x+4)^2 + 2h(x+4) + h \\
+\end{array}$$
+$$\begin{array}{l}
+(g + 4h)x^4 + (3g + h)x^3 + (g + 4h)x^2 + (3g + h)x + (g + 4h) \\
+(g + 4h)(x+1)^4 + 4g(x+1)^3 + 3g(x+1)^2 + g(x+1) + 2g \\
+(g + 4h)(x+2)^4 + 4h(x+2)^3 + (2g + 4h)(x+2)^2 + (3g + 4h)(x+2) + (g + 4h) \\
+(g + 4h)(x+3)^4 + (g + 3h)(x+3)^3 + (3g + h)(x+3)^2 + 2h(x+3) + (g + 4h) \\
+(g + 4h)(x+4)^4 + (2g + 2h)(x+4)^3 + (g + h)(x+4)^2 + (3g + 3h)(x+4) + (4g + 4h) \\
+\end{array}$$
+\end{document}
