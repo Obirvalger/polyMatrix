@@ -17,7 +17,7 @@ Getopt::Long::Configure ("bundling");
 GetOptions (
     'k=i'          => \$k,
     't|treshold=i' => \$treshold,
-    'in:0'        => \$infile, # output file STDIN by default
+    'in:0'         => \$infile, # output file STDIN by default
     'out:0'        => \$outfile # output file STDOUT by default
     );
 

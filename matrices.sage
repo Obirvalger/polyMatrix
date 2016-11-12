@@ -314,3 +314,60 @@ def unit_kers(l, k = 0):
     for i in range(k):
         m.append([i] * n)
     return len(filter(lambda y: m == y, map(lambda x: map(list, list(x)), ks))) == len(l)
+
+def my(d,k = 5):
+        m = [[0] * k for j in range(k)]
+        for i in range(k):
+            for j in range (k):
+                if j >= i:
+                    m[i][j] = binomial(j,i) * d^(j-i)
+                    #m[i][j] = d^(j-i)
+        print("d = {}".format(d))
+        #print(matrix(GF(k), m))
+        return matrix(GF(k), m)
+
+def fg_mul_a(k = 5):
+    def a_d(d):
+        m = [[0] * k for j in range(k)]
+        for i in range(k):
+            for j in range (k):
+                if j >= i:
+                    m[i][j] = binomial(j,i) * d^(j-i)
+        return matrix(GF(k), m)
+    
+    F.<f,g,d> = GF(k)[]
+    result = [[],[]]
+    l = '''\documentclass[a4paper, 14pt]{extarticle}
+
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+
+\\begin{document}\n'''
+    v1, v2, v3 = [], [], []
+    
+    for i in range(k):
+        if (i % 2 == 0):
+            v1.append([f])
+            v2.append([g])
+            v3.append([d^i * f])
+        else:
+            v1.append([g])
+            v2.append([2*f])
+            v3.append([d^i * g])
+    
+    v1 = matrix(v1)
+    v2 = matrix(v2)
+    v3 = matrix(v3)
+    
+    #l += latex(v1) + "\n" + latex(v2) + "\n" + latex(v3) + "\n\n"
+    
+    for i in range(k):
+        l += latex(a_d(i)) + "\n"
+        result[0].append(a_d(i) * v1)
+        l += latex(result[0][-1]) + "\n"
+        result[1].append(a_d(i) * v2)
+        l += latex(result[1][-1]) + "\n\n"
+    
+    l += latex(a_d(1) * v3) + "\n\end{document}"
+    result += [a_d(1) * v3, l]
+    return result

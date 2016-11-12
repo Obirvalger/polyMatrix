@@ -3,10 +3,12 @@
 use strict;
 use warnings;
 #use Math::BigRat;
+use Memoize;
 use feature qw(say);
 use Data::Dumper;
+use Getopt::Long;
 
-our $k = 7;
+our $k = 5;
 my $test = 1; # run testing functions?
 our $verbose_tests = 0; # notify about passed tests?
 
@@ -21,6 +23,11 @@ my $in_plus_r  = qr/\Q$in_plus_s\E/;
 my $out_plus_r = qr/\Q$out_plus_s\E/;
 my $c_mul_r    = qr/\Q$c_mul_s\E/;
 my $x_mul_r    = qr/\Q$x_mul_s\E/;
+
+Getopt::Long::Configure ("bundling");
+GetOptions (
+    'k=i'              => \$k
+);
 
 do {
     local $k = 5;
@@ -38,8 +45,116 @@ do {
     test_generate(@functions) if $test;
 } if 0;
 
-my @funcs7 = generate('1.g;1.h','1.h;3.g', 7);
-run_tests(@funcs7);
+my @funcs = generate('1.g;1.h','1.h;2.g', $k);
+run_tests(@funcs);
+
+#say Dumper(@funcs);
+if (0) {
+    for my $f (@funcs) {
+        for my $d (0..$k-1) {
+            say polar($f,$d);
+        }
+        say '';
+    }
+}
+#say $funcs[0];
+#say polar($funcs[0], 1);
+#say polar($funcs[2]);
+if (1) {
+    latex_preambule();
+    latex_table(@funcs);
+    latex_polarizations(@funcs);
+    latex_end();
+}
+#say conv($funcs7[1]);
+
+sub latex_preambule {
+    say
+'\documentclass[a4paper, 10pt]{extarticle}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+\usepackage{array}
+\usepackage{diagbox}
+\newcolumntype{C}{>{$}c<{$}}
+
+\begin{document}';
+}
+
+sub latex_end { say '\end{document}' }
+
+sub latex_table {
+    my @funcs = @_;
+    say '\begin{table}';
+    say '\centering';
+    say '\begin{tabular}{|c|', 'C|' x $k, '}';
+    say '\hline';
+    say '\diagbox[height=1.3\line, innerleftsep=2.2pt, innerrightsep=2.2pt]{f}{d} & ' . join(' & ', (0..$k-1)) . ' \\\\ \hline';
+
+    while (my ($i,$f) = each @funcs) {
+        print "\$f_$i\$ & ";
+        for my $d (0..$k-1) {
+            print ' & ' if $d;
+            print conv(polar($f, $d));
+        }
+        
+        say " \\\\ \\hline";
+    }
+    say '\end{tabular}';
+    say '\end{table}';
+}
+
+sub latex_polarizations {
+    for my $fun (@_) {
+        #say $fun;
+        say '$$\begin{array}{l}';
+        for my $d (0..$k-1) {
+            my $ps = out_format(polarize(in_format($fun), $d));
+            $ps =~ s/\*//g;
+            #my $ns = split($out_plus_r, $ps);
+            #die "$ns; $ps" if $ns != 5;
+            #say "d = $d";
+            say "@{[out_format($ps)]} \\\\";
+        }
+        say '\end{array}$$';
+        #say "\n";
+    }
+}
+
+sub invert {
+    my $n = shift;
+    @{[grep {$_ * $n % $k == 1} (1..$k-1)]}[0];
+}
+memoize('invert');
+
+sub conv {
+    my @s = map {@{[split($x_mul_r,$_)]}[0]}
+            split($out_plus_r, in_format(shift));
+
+    for my $f (@s) {
+        if ($f =~ /\(.*?\)/) {
+            $f =~ s/\(|\)//g;
+            my @gh = split($in_plus_r,$f);
+            #say Dumper(@gh);
+            my ($gc, $gf) = split($c_mul_r, $gh[0]);
+            my ($hc, $hf) = split($c_mul_r, $gh[1]);
+            #my $tmp = invert $gc;
+            #say $tmp;
+            #say "$gc $hc @{[invert($gc)]} @{[invert($gc) * $hc]}";
+            my $t = invert($gc) * $hc % $k + 1;
+            $f = "f_$t";
+        } else {
+            $f = @{[split($c_mul_r, $f)]}[1];
+            if ($f eq 'g') {
+                $f = 'f_0';
+            } else {
+                $f = 'f_1';
+            }
+        }
+    }
+    join("", @s);
+}
+
+# say ($funcs7[2]);
 #latex_polarizations(@funcs7);
 #my $f0 = $funcs7[0];
 #my $f1 = $funcs7[1];
@@ -58,10 +173,10 @@ sub generate {
     my $gn = '';
     my @res;
     
-    $fn =  out_format(join($out_plus_s,
-        map {"@f[$_%2]*x^@{[$k-1-$_]}"} (0..$k-1)));
-    $gn =  out_format(join($out_plus_s,
-        map {"@g[$_%2]*x^@{[$k-1-$_]}"} (0..$k-1)));
+    $fn =  out_format(in_format(join($out_plus_s,
+        map {"@f[$_%2]*x^@{[$k-1-$_]}"} (0..$k-1))));
+    $gn =  out_format(in_format(join($out_plus_s,
+        map {"@g[$_%2]*x^@{[$k-1-$_]}"} (0..$k-1))));
     
     push @res, $fn, $gn;   
     for my $i (1..$k-1) {
@@ -69,38 +184,6 @@ sub generate {
     }
     
     return @res;
-}
-
-sub latex_polarizations {
-say 
-'\documentclass[a4paper, 10pt]{extarticle}
-\usepackage[utf8]{inputenc}
-\usepackage[russian]{babel}
-\usepackage{array}
-\usepackage{fullpage}
-\newcolumntype{C}{>{$}c<{$}}
-
-\marginparwidth 0pt
-\marginparsep 0pt
-\oddsidemargin \dimexpr 0in -1in
-\textwidth \dimexpr \pdfpagewidth -2\oddsidemargin -2in
-
-\begin{document}';
-    for my $fun (@_) {
-        #say $fun;
-        say '$$\begin{array}{l}';
-        for my $d (0..$k-1) {
-            my $ps = out_format(polarize(in_format($fun), $d));
-            $ps =~ s/\*//g;
-            #my $ns = split($out_plus_r, $ps);
-            #die "$ns; $ps" if $ns != 5;
-            #say "d = $d";
-            say "@{[out_format($ps)]} \\\\";
-        }
-        say '\end{array}$$';
-        #say "\n";
-    }
-    say '\end{document}';
 }
 
 sub is_complex {
@@ -153,10 +236,13 @@ sub in_format {
     s/Plus/$in_plus_s/g;
 
     # multiply
-    s/(\d+)\*([a-z]+)/$1.$2/g;
-    s/(\d+)([a-z]+)/$1.$2/g;
-    s/([^\*\.])([a-z]+)/${1}1.$2/g;
-    s/^([a-z]+)/1.$1/;
+    s/(\d+)\*([a-z]+)/$1$c_mul_s$2/g;
+    s/(\d+)([a-z]+)/$1$c_mul_s$2/g;
+    s/([^\*\.])([a-z]+)/${1}1$c_mul_s$2/g;
+    s/^([a-z]+)/1$c_mul_s$1/;
+
+    # coefficients mod k
+    s/((?:-|\d)+)\./$1%$k . '.'/ge;
 
     # power
     s/([a-z]+)$/$1*x^0/;
@@ -206,7 +292,7 @@ sub polarize {
     }
 
     my ($s, $d) = @_;
-    $s =~ s/(x)\^(.)/powM($1, $d, $2)/ge;
+    $s =~ s/(x)\^(.)/powM($1, -$d % $k, $2)/ge;
     my $res = collect(expand($s));
     $res =~ s/x/(x+$d)/g if $d != 0;
     $res;
