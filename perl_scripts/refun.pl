@@ -88,7 +88,7 @@ sub latex_table {
     say '\centering';
     say '\begin{tabular}{|c|', 'C|' x $k, '}';
     say '\hline';
-    say '\diagbox[height=1.3\line, innerleftsep=2.2pt, innerrightsep=2.2pt]{f}{d} & ' . join(' & ', (0..$k-1)) . ' \\\\ \hline';
+    say '\diagbox{$f$}{$d$} & ' . join(' & ', (0..$k-1)) . ' \\\\ \hline';
 
     while (my ($i,$f) = each @funcs) {
         print "\$f_$i\$ & ";
