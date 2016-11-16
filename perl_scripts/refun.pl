@@ -9,6 +9,7 @@ use Data::Dumper;
 use Getopt::Long;
 
 our $k = 5;
+our $c = 2;
 my $test = 1; # run testing functions?
 our $verbose_tests = 0; # notify about passed tests?
 
@@ -26,7 +27,8 @@ my $x_mul_r    = qr/\Q$x_mul_s\E/;
 
 Getopt::Long::Configure ("bundling");
 GetOptions (
-    'k=i'              => \$k
+    'k=i' => \$k,
+    'c=i' => \$c
 );
 
 do {
@@ -45,9 +47,11 @@ do {
     test_generate(@functions) if $test;
 } if 0;
 
-my @funcs = generate('1.g;1.h','1.h;2.g', $k);
+#my $c = primitive_root($k);
+my @funcs = generate("1.g;1.h","1.h;$c.g", $k);
 run_tests(@funcs);
-
+say "Ok";
+#say primitive_root($k);
 #say Dumper(@funcs);
 if (0) {
     for my $f (@funcs) {
@@ -57,16 +61,32 @@ if (0) {
         say '';
     }
 }
+
 #say $funcs[0];
 #say polar($funcs[0], 1);
 #say polar($funcs[2]);
-if (1) {
+if (0) {
     latex_preambule();
     latex_table(@funcs);
     latex_polarizations(@funcs);
     latex_end();
 }
 #say conv($funcs7[1]);
+
+sub primitive_root {
+    my $k = shift;
+    my $res;
+    ELEM: 
+    for my $i (2..$k-1) {
+        for my $e (2..$k-2) {
+            next ELEM if $i ** $e  % $k == 1;
+        }
+        $res = $i;
+        last ELEM;
+    }
+
+    return $res;
+}
 
 sub latex_preambule {
     say
@@ -81,7 +101,6 @@ sub latex_preambule {
 }
 
 sub latex_end { say '\end{document}' }
-
 sub latex_table {
     my @funcs = @_;
     say '\begin{table}';

@@ -130,8 +130,8 @@ sub to_latex {
 =cut        
     }
     $_ = join " & + ", @summands;
-    s/\+ Nop//g;
-    s/Nop\s*&\s*\+/ & /g;
+    s/Nop\s*+//g;
+    s/Nop//g;
     s/\+//g if $reorder; 
     s/Plus/+/g;
     s/$/ \\\\ \\hline/ if $reorder;
