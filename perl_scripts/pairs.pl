@@ -6,23 +6,21 @@ use Carp;
 use Getopt::Long;
 use autodie;
 use feature qw(say);
-use Polynomial;
 
-our $k;
-my $treshold;
-my $infile;
-my $outfile;
+my ($k, $treshold, $infile, $outfile);
 
 Getopt::Long::Configure ("bundling");
 GetOptions (
     'k=i'          => \$k,
     't|treshold=i' => \$treshold,
-    'in:0'        => \$infile, # output file STDIN by default
+    'in:0'         => \$infile, # output file STDIN by default
     'out:0'        => \$outfile # output file STDOUT by default
     );
 
 my $in;
 unless (defined $infile) {
+    system("./filter_complex.pl -k $k -t $treshold")
+        unless -f "complex_${k}_$treshold.txt"; 
     open($in, '<', "complex_${k}_$treshold.txt");
 } elsif ($infile) {
     open($in, '<', $infile);
@@ -52,7 +50,6 @@ for my $f (keys %functions) {
             my $complex = 1;
             for my $c (1..$k-1) {
                 my $h = add_mul($f, $g, $c);
-                #say $h;
                 unless ($functions{$h}) {
                     $complex = 0;
                     last;
@@ -60,7 +57,23 @@ for my $f (keys %functions) {
             }
             
             say $out "$f,$g" if $complex;
-            #say "$f; $g" unless $complex;
         }
     }
+}
+
+sub add_mul {
+    my $f = shift;
+    my $g = shift;
+    my $c = shift;
+    $c //= 1;
+
+    my @f = split //, $f;
+    my @g = split //, $g;
+    my @h;
+
+    for (my $i = 0; $i < @f; $i++) {
+        $h[$i] = ($f[$i] + $c*$g[$i]) % $k; 
+    }
+
+    join '', @h;
 }

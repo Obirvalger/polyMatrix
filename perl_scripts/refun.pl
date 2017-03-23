@@ -25,10 +25,13 @@ my $out_plus_r = qr/\Q$out_plus_s\E/;
 my $c_mul_r    = qr/\Q$c_mul_s\E/;
 my $x_mul_r    = qr/\Q$x_mul_s\E/;
 
+my ($f, $p);
 Getopt::Long::Configure ("bundling");
 GetOptions (
     'k=i' => \$k,
-    'c=i' => \$c
+    'c=i' => \$c,
+    'f=i' => \$f,
+    'p=i' => \$p,
 );
 
 do {
@@ -50,7 +53,9 @@ do {
 #my $c = primitive_root($k);
 my @funcs = generate("1.g;1.h","1.h;$c.g", $k);
 run_tests(@funcs);
-say "Ok";
+say $funcs[$f];
+say polar($funcs[$f],$p);
+#say "Ok";
 #say primitive_root($k);
 #say Dumper(@funcs);
 if (0) {

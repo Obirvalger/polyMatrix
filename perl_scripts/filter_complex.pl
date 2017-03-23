@@ -23,6 +23,8 @@ GetOptions (
 
 my $in;
 unless (defined $infile) {
+    system("./vectors.pl6 $k > functions_${k}_1.txt")
+        unless -f "functions_${k}_1.txt"; 
     open($in, '<', "functions_${k}_1.txt");
 } elsif ($infile) {
     open($in, '<', $infile);
